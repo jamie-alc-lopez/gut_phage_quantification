@@ -172,6 +172,9 @@ end
 stool_ind = strcmp(paired_manifest.sample_type,'stool');
 VLP_ind = strcmp(paired_manifest.sample_type,'VLP');
 
+%Mean microviridae abundance in VLP samples
+mean_VLP_microvir_abun = mean(paired_manifest.microvir_abundance(VLP_ind));
+
 %Compute median VMRs
 median_stool_VMR = median(paired_manifest.phage_to_microbe_ratio(stool_ind));
 median_VLP_VMR = median(paired_manifest.phage_to_microbe_ratio(VLP_ind));

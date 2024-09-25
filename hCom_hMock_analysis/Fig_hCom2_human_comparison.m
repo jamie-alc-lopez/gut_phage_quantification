@@ -59,11 +59,11 @@ hum_VMR = yachida_manifest.phage_to_microbe_ratio;
 hum_VTR = yachida_manifest.vir_temp_ratio;
 
 %Compute centiles and standard deviation distances of hCom wrt human data
-[phage_H_cent,phage_H_d_std] = compute_relative_stats(hum_phage_H,mean(hCom_ex_vivo_phage_H));
-[phage_rich_cent,phage_rich_d_std] = compute_relative_stats(hum_phage_rich,mean(hCom_ex_vivo_phage_rich));
-[VMR_cent,VMR_d_std] = compute_relative_stats(hum_VMR,mean(hCom_ex_vivo_VMR));
-max_phage_H_cent = compute_relative_stats(hum_phage_H,max(hCom_ex_vivo_phage_H)); 
-min_phage_H_VMR_cent = compute_relative_stats(hum_phage_H,min(hCom_ex_vivo_phage_H)); 
+[phage_H_cent,phage_H_d_std] = compute_relative_stats(hum_phage_H,mean(hCom_phage_H));
+[phage_rich_cent,phage_rich_d_std] = compute_relative_stats(hum_phage_rich,mean(hCom_phage_rich));
+[VMR_cent,VMR_d_std] = compute_relative_stats(hum_VMR,mean(hCom_VMR));
+max_phage_H_cent = compute_relative_stats(hum_phage_H,max(hCom_phage_H)); 
+min_phage_H_VMR_cent = compute_relative_stats(hum_phage_H,min(hCom_phage_H)); 
 
 %% Plot the main human comparison figure
 close all
