@@ -43,17 +43,17 @@ end
 %Import manifest and initiate storage variables
 mod_manifest = readtable(manifest_file,'ReadRowNames',false);
 sample_names = mod_manifest.sample;
-num_sample = length(sample_names); 
+num_sample = length(sample_names);
 tax_cell = cell(num_sample,length(tax_file_cell));
 total_reads_vec = nan(num_sample,1);
 
 %Loop through all samples and add table data
 for i = 1:num_sample
-    
+
     %Get matlab valid name to control for matlab's import behavior
     orig_name = sample_names{i};
     valid_name = matlab.lang.makeValidName(orig_name);
-    
+
     total_reads_vec(i) = total_reads_table{orig_name,'Tot_Samp_Reads'};
 
     %Add entries to cells from the raw tables
@@ -116,7 +116,7 @@ end
 
 %Identify which phage species are unclassified, virulent, and temperate
 null_ind = isnan(virscore);
-virulent_ind = (virscore > 0.5) & (~null_ind); 
+virulent_ind = (virscore > 0.5) & (~null_ind);
 temperate_ind = (virscore <= 0.5) & (~null_ind);
 
 %Get phage and microbe index
@@ -135,74 +135,79 @@ all_root_ind = false(size(read_names));
 cell_root_ind = false(size(read_names));
 non_cell_root_ind = false(size(read_names));
 for i = 1:length(root_str)
-   all_root_ind = all_root_ind | strcmp(read_names,root_str{i});
-   cell_root_ind = cell_root_ind | strcmp(read_names,cell_root_str{i});
-   non_cell_root_ind = non_cell_root_ind | strcmp(read_names,non_cell_root_str{i});
+    all_root_ind = all_root_ind | strcmp(read_names,root_str{i});
+    cell_root_ind = cell_root_ind | strcmp(read_names,cell_root_str{i});
+    non_cell_root_ind = non_cell_root_ind | strcmp(read_names,non_cell_root_str{i});
 end
 
 %Define diversity functions
 H = @(p) nansum(-(p/sum(p)).*log2(p/sum(p)));
 richness = @(p) sum(p > 0);
-p0 = 1e-3; 
+p0 = 1e-3;
 corr_richness = @(p) sum(1 - exp(-p./p0));
 
 %Loop through samples and compute various metrics
 for i = 1:size(mod_manifest,1)
 
-    %Fraction of unclassified reads
     read_vec = mod_manifest.read{i}.Variables;
-    mod_manifest.unclassified_read_frac(i) = sum(read_vec(all_root_ind)) - ...
-        sum(read_vec(cell_root_ind | non_cell_root_ind));
-    mod_manifest.cell_read_frac(i) = sum(read_vec(cell_root_ind));
-    mod_manifest.viral_read_frac(i) = sum(read_vec(non_cell_root_ind));
 
-    %Ratio of virulent to non-virulent
-    phage_vec = mod_manifest.species_phage{i}.Variables;
-    mod_manifest.vir_temp_ratio(i) = ...
-        sum(phage_vec(virulent_ind))/sum(phage_vec(temperate_ind));
-    mod_manifest.null_frac(i) = sum(phage_vec(null_ind))/sum(phage_vec);
-    
-    %Phage to microbe ratio 
-    all_vec = mod_manifest.species{i}.Variables;
-    mod_manifest.phage_to_microbe_ratio(i) = ...
-        sum(all_vec(phage_ind))/sum(all_vec(microbe_ind));
-    mod_manifest.phage_to_bacteria_ratio(i) = ...
-        sum(all_vec(phage_ind))/sum(all_vec(bacteria_ind));
+    %Check whether read (prevents error from Phanta run failures)
+    if isa(read_vec,"double")
 
-    %Total phage, bacteria and microbe frac
-    mod_manifest.phage_frac(i) = sum(all_vec(phage_ind));
-    mod_manifest.bacteria_frac(i) = sum(all_vec(bacteria_ind));
-    mod_manifest.microbe_frac(i) = sum(all_vec(microbe_ind));
+        %Fraction of unclassified reads
+        mod_manifest.unclassified_read_frac(i) = sum(read_vec(all_root_ind)) - ...
+            sum(read_vec(cell_root_ind | non_cell_root_ind));
+        mod_manifest.cell_read_frac(i) = sum(read_vec(cell_root_ind));
+        mod_manifest.viral_read_frac(i) = sum(read_vec(non_cell_root_ind));
 
-    %Diversity metrics
-    mod_manifest.phage_H(i) = H(all_vec(phage_ind));
-    mod_manifest.bacteria_H(i) = H(all_vec(bacteria_ind));
-    mod_manifest.archaea_H(i) = H(all_vec(archaea_ind));
-    mod_manifest.eukarya_H(i) = H(all_vec(eukarya_ind));
-    mod_manifest.H_diff(i) = mod_manifest.phage_H(i) - mod_manifest.bacteria_H(i);
+        %Ratio of virulent to non-virulent
+        phage_vec = mod_manifest.species_phage{i}.Variables;
+        mod_manifest.vir_temp_ratio(i) = ...
+            sum(phage_vec(virulent_ind))/sum(phage_vec(temperate_ind));
+        mod_manifest.null_frac(i) = sum(phage_vec(null_ind))/sum(phage_vec);
 
-    %Richness metrics
-    mod_manifest.phage_richness(i) = richness(all_vec(phage_ind));
-    mod_manifest.bacteria_richness(i) = richness(all_vec(bacteria_ind));
-    mod_manifest.archaea_richness(i) = richness(all_vec(archaea_ind));
-    mod_manifest.eukarya_richness(i) = richness(all_vec(eukarya_ind));
+        %Phage to microbe ratio
+        all_vec = mod_manifest.species{i}.Variables;
+        mod_manifest.phage_to_microbe_ratio(i) = ...
+            sum(all_vec(phage_ind))/sum(all_vec(microbe_ind));
+        mod_manifest.phage_to_bacteria_ratio(i) = ...
+            sum(all_vec(phage_ind))/sum(all_vec(bacteria_ind));
 
-    %Corrected richness metrics
-    mod_manifest.phage_corr_richness(i) = corr_richness(all_vec(phage_ind));
-    mod_manifest.bacteria_corr_richness(i) = corr_richness(all_vec(bacteria_ind));
-    mod_manifest.archaea_corr_richness(i) = corr_richness(all_vec(archaea_ind));
-    mod_manifest.eukarya_corr_richness(i) = corr_richness(all_vec(eukarya_ind));
+        %Total phage, bacteria and microbe frac
+        mod_manifest.phage_frac(i) = sum(all_vec(phage_ind));
+        mod_manifest.bacteria_frac(i) = sum(all_vec(bacteria_ind));
+        mod_manifest.microbe_frac(i) = sum(all_vec(microbe_ind));
 
-    %Evenness metrics
-    mod_manifest.phage_evenness(i) = ...
-        mod_manifest.phage_H(i)/log2(mod_manifest.phage_richness(i));
-    mod_manifest.bacteria_evenness(i) = ...
-        mod_manifest.bacteria_H(i)/log2(mod_manifest.bacteria_richness(i));
-    mod_manifest.archaea_evenness(i) = ...
-        mod_manifest.archaea_H(i)/log2(mod_manifest.archaea_richness(i));
-    mod_manifest.eukarya_evenness(i) = ...
-        mod_manifest.eukarya_H(i)/log2(mod_manifest.eukarya_richness(i));
+        %Diversity metrics
+        mod_manifest.phage_H(i) = H(all_vec(phage_ind));
+        mod_manifest.bacteria_H(i) = H(all_vec(bacteria_ind));
+        mod_manifest.archaea_H(i) = H(all_vec(archaea_ind));
+        mod_manifest.eukarya_H(i) = H(all_vec(eukarya_ind));
+        mod_manifest.H_diff(i) = mod_manifest.phage_H(i) - mod_manifest.bacteria_H(i);
 
+        %Richness metrics
+        mod_manifest.phage_richness(i) = richness(all_vec(phage_ind));
+        mod_manifest.bacteria_richness(i) = richness(all_vec(bacteria_ind));
+        mod_manifest.archaea_richness(i) = richness(all_vec(archaea_ind));
+        mod_manifest.eukarya_richness(i) = richness(all_vec(eukarya_ind));
+
+        %Corrected richness metrics
+        mod_manifest.phage_corr_richness(i) = corr_richness(all_vec(phage_ind));
+        mod_manifest.bacteria_corr_richness(i) = corr_richness(all_vec(bacteria_ind));
+        mod_manifest.archaea_corr_richness(i) = corr_richness(all_vec(archaea_ind));
+        mod_manifest.eukarya_corr_richness(i) = corr_richness(all_vec(eukarya_ind));
+
+        %Evenness metrics
+        mod_manifest.phage_evenness(i) = ...
+            mod_manifest.phage_H(i)/log2(mod_manifest.phage_richness(i));
+        mod_manifest.bacteria_evenness(i) = ...
+            mod_manifest.bacteria_H(i)/log2(mod_manifest.bacteria_richness(i));
+        mod_manifest.archaea_evenness(i) = ...
+            mod_manifest.archaea_H(i)/log2(mod_manifest.archaea_richness(i));
+        mod_manifest.eukarya_evenness(i) = ...
+            mod_manifest.eukarya_H(i)/log2(mod_manifest.eukarya_richness(i));
+
+    end
 end
 
 

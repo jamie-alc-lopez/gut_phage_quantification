@@ -7,7 +7,8 @@ clear;clc
 close all
 
 %Read data
-hCom_manifest = wrapped_hCom_phanta_import('phanta_output/hCom_UHGV_final_merged_outputs/');
+hCom_manifest = wrapped_hCom_phanta_import(...
+    'phanta_output/hCom_UHGV_final_merged_outputs/');
 hCom_manifest = sortrows(hCom_manifest,'mouse');
 read_cutoff = 1e5;
 hCom_manifest = hCom_manifest(hCom_manifest.total_reads > read_cutoff,:);
@@ -45,8 +46,10 @@ hCom_ex_vivo_VTR = hCom_manifest.vir_temp_ratio(ex_vivo_ind);
 %This initially uses the scripts in the cohort analyses folder, requires a 
 %temporary change of working directory
 cd('../cohort_analyses/process_yachida_2019/')
-yachida_manifest= ...
-    wrapped_yachida_2019_phanta_import('yachida_2019_UHGV_final_merged_outputs/');
+yachida_manifest= wrapped_yachida_2019_phanta_import(...
+    'yachida_2019_UHGV_final_merged_outputs/');
+%yachida_manifest= wrapped_yachida_2019_phanta_import(...
+%    'yachida_2019_UHGV_high_cov_final_merged_outputs/');
 cd('../../hCom_hMock_analysis/')
 yachida_manifest = yachida_manifest(yachida_manifest.total_reads > read_cutoff,:);
 
@@ -129,36 +132,45 @@ text(-0.2,1.06,'B','Interpreter','tex','Units','normalized',...
 % Make Figure 4C - VMR
 subplot(2,2,3)
 hold on
-violinplot_modified(hum_VMR,1,ones(size(hum_VMR)),...
+violinplot_modified(log10(hum_VMR),1,ones(size(hum_VMR)),...
     'ViolinColor',colors(3,:),'MarkerSize',MarkerSize);
-violinplot_modified(hCom_VMR,2,ones(size(hCom_VMR)),...
+violinplot_modified(log10(hCom_VMR),2,ones(size(hCom_VMR)),...
     'ViolinColor',colors(3,:),'MarkerSize',MarkerSize);
-ylim([0,20])
+ylim(log10([5e-1,2e1]))
+yticks([0,1])
+yticklabels({'10^0','10^1'})
+set(gca,'YScale','linear')
 xlim([0-0.5,1+0.5])
 ylabel('Virus to microbe ratio','Interpreter','tex','FontSize',LabelFontSize,...
     'FontName',FontName)
 set(gca,'FontSize',GenFontSize,'FontName',FontName)
 xticks(0:1);
 xticklabels({'Stool','hCom2'})
+set(gca,'YMinorTick','on')
 set(gca,'TickLabelInterpreter','tex')
 text(-0.2,1.06,'C','Interpreter','tex','Units','normalized',...
     'FontSize',PanelFontSize,'FontName',FontName)
 
-% Make Figure 4C - VTR
+% Make Figure 4D - VTR
 subplot(2,2,4)
 hold on
-violinplot_modified(hum_VTR,1,ones(size(hum_VTR)),...
+violinplot_modified(log10(hum_VTR),1,ones(size(hum_VTR)),...
     'ViolinColor',colors(3,:),'MarkerSize',MarkerSize);
-violinplot_modified(hCom_VTR,2,ones(size(hCom_VTR)),...
+violinplot_modified(log10(hCom_VTR),2,ones(size(hCom_VTR)),...
     'ViolinColor',colors(3,:),'MarkerSize',MarkerSize);
-plot([1-0.2,1+0.2],[0,0],'k--','LineWidth',2);
+%plot([1-0.2,1+0.2],[0,0],'k--','LineWidth',2);
 
-ylim([-0.5,6])
+%ylim([-0.5,6])
+ylim(log10([1e-2,3e1]))
+yticks([-2,-1,0,1])
+yticklabels({'10^{-2}','10^{-1}','10^0','10^1'})
+set(gca,'YScale','linear')
 xlim([0-0.5,1+0.5])
 ylabel({'Estimated virulent', 'to temperate ratio'},'Interpreter','tex')
 set(gca,'FontSize',GenFontSize,'FontName',FontName)
 xticks(0:1);
 xticklabels({'Stool','hCom2'})
+set(gca,'YMinorTick','on')
 set(gca,'TickLabelInterpreter','tex')
 text(-0.2,1.06,'D','Interpreter','tex','Units','normalized',...
     'FontSize',PanelFontSize,'FontName',FontName)
@@ -245,13 +257,16 @@ text(-0.2,1.06,'B','Interpreter','tex','Units','normalized',...
 % VMR
 subplot(2,2,3)
 hold on
-violinplot_modified(hCom_VMR,1,ones(size(hCom_bact_H)),...
+violinplot_modified(log10(hCom_VMR),1,ones(size(hCom_bact_H)),...
     'ViolinColor',colors(3,:),'MarkerSize',MarkerSize);
-violinplot_modified(hCom_chal_VMR,2,ones(size(hCom_chal_bact_H)),...
+violinplot_modified(log10(hCom_chal_VMR),2,ones(size(hCom_chal_bact_H)),...
     'ViolinColor',colors(3,:),'MarkerSize',MarkerSize);
-violinplot_modified(hCom_ex_vivo_VMR,3,ones(size(hCom_ex_vivo_bact_H)),...
+violinplot_modified(log10(hCom_ex_vivo_VMR),3,ones(size(hCom_ex_vivo_bact_H)),...
     'ViolinColor',colors(3,:),'MarkerSize',MarkerSize);
-ylim([0,6])
+ylim(log10([5e-1,2e1]))
+yticks([0,1])
+yticklabels({'10^0','10^1'})
+set(gca,'YMinorTick','on')
 xlim([0-0.5,2+0.5])
 ylabel('Virus to microbe ratio','Interpreter','tex',...
     'FontSize',LabelFontSize,'FontName',FontName)
@@ -265,16 +280,18 @@ text(-0.2,1.06,'C','Interpreter','tex','Units','normalized',...
 % VTR
 subplot(2,2,4)
 hold on
-violinplot_modified(hCom_VTR,1,ones(size(hCom_bact_H)),...
+violinplot_modified(log10(hCom_VTR),1,ones(size(hCom_bact_H)),...
     'ViolinColor',colors(3,:),'MarkerSize',MarkerSize);
-violinplot_modified(hCom_chal_VTR,2,ones(size(hCom_chal_bact_H)),...
+violinplot_modified(log10(hCom_chal_VTR),2,ones(size(hCom_chal_bact_H)),...
     'ViolinColor',colors(3,:),'MarkerSize',MarkerSize);
-violinplot_modified(hCom_ex_vivo_VTR,3,ones(size(hCom_ex_vivo_bact_H)),...
+violinplot_modified(log10(hCom_ex_vivo_VTR),3,ones(size(hCom_ex_vivo_bact_H)),...
     'ViolinColor',colors(3,:),'MarkerSize',MarkerSize);
 
-ylim([-0.25,2])
+ylim(log10([1e-1,3e1]))
+yticks([-1,0,1])
+yticklabels({'10^{-1}','10^0','10^1'})
+set(gca,'YMinorTick','on')
 xlim([0-0.5,2+0.5])
-yticks([0,0.5,1,1.5,2])
 ylabel({'Estimated virulent','to temperate ratio'},'Interpreter','tex',...
     'FontSize',LabelFontSize,'FontName',FontName)
 set(gca,'FontSize',GenFontSize,'FontName',FontName)

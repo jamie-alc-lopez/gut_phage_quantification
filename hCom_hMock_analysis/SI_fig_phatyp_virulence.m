@@ -37,13 +37,15 @@ MarkerSize = 12;
 
 figure
 hold on
-violinplot_modified(hum_VTR,1,ones(size(hum_VTR)),...
+violinplot_modified(log10(hum_VTR),1,ones(size(hum_VTR)),...
     'ViolinColor',colors(3,:),'MarkerSize',MarkerSize);
-violinplot_modified(hCom_VTR,2,ones(size(hCom_VTR)),...
+violinplot_modified(log10(hCom_VTR),2,ones(size(hCom_VTR)),...
     'ViolinColor',colors(3,:),'MarkerSize',MarkerSize);
-plot([1-0.2,1+0.2],[0,0],'k--','LineWidth',2);
 
-ylim([-0.5,6])
+ylim(log10([1e-1,1e1]))
+yticks([-1,0,1])
+yticklabels({'10^{-1}','10^0','10^1'})
+set(gca,'YMinorTick','on')
 xlim([0-0.5,1+0.5])
 ylabel({'PhaTYP estimated','virulent to temperate ratio'},'Interpreter','tex',...
     'FontSize',LabelFontSize,'FontName',FontName)

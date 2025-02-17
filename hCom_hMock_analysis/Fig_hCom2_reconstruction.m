@@ -4,13 +4,18 @@
 clear;clc
 close all
 
-%Import hMock and hCom
-hCom_manifest = wrapped_hCom_phanta_import('phanta_output/hCom_UHGV_final_merged_outputs/');
+%Import hCom
+hCom_manifest = wrapped_hCom_phanta_import(...
+    'phanta_output/hCom_UHGV_final_merged_outputs/');
 hCom_manifest = sortrows(hCom_manifest,'mouse');
 read_cutoff = 1e5;
 hCom_manifest = hCom_manifest(hCom_manifest.total_reads > read_cutoff,:);
 
-hMock_manifest = wrapped_hMock_phanta_import('phanta_output/hMock_UHGV_final_merged_outputs/');
+%Import hMock
+hMock_manifest = wrapped_hMock_phanta_import(...
+    'phanta_output/hMock_UHGV_final_merged_outputs/');
+%hMock_manifest = wrapped_hMock_phanta_import(...
+%    'phanta_output/hMock_UHGV_high_cov_final_merged_outputs/');
 hMock_manifest = hMock_manifest(hMock_manifest.total_reads > read_cutoff,:);
 hMock_manifest = sortrows(hMock_manifest,'mouse');
 
