@@ -21,14 +21,16 @@ Code for generating Fig. 1 and associated SI figures
 
 -`standardize_study_data.m`: for studies where the needed quantification data can be immediately taken from SI file or manuscript figure, this script formats quantification data into a standardized format. It takes in files from `study_data` folder and outputs standardized tables in `final_aggregate_tables`
 
+-`SI_fig_no_MDA_VLP_bulk_relative_abundance.m`: Generates Fig. S3. 
+
 ### hCom_hMock_analysis
 Code for generating Fig. 3-4 and associated SI figures.
 
--`Fig_hCom2_human_comparison.m`: generates Fig. 4 and S3
+-`Fig_hCom2_human_comparison.m`: generates Fig. 4 and S4
 
--`Fig_hCom2_reconstruction.m`: generates Fig. 3 and S2
+-`Fig_hCom2_reconstruction.m`: generates Fig. 3 and S3
 
--`SI_fig_phatyp_virulence.m`: generates Fig. S4
+-`SI_fig_phatyp_virulence.m`: generates Fig. S5
 
 -`SI_table_hCom2_human_taxa_comparison.m`: analyzes shared taxa between hCom2 mouse stool and the Yachida et al. stool
 
@@ -58,3 +60,7 @@ This folder contains analyses and secondary quantifications of different gut vir
 -`process_shkoporov_2019/analysis_shkoporov_VLP_stool.m`: analyzes the Phanta quantification of Shkoporov et al. 2019. Generates `virome_abundance_meta_analysis/final_aggregate_tables/shkoporov_2019_phanta_aggregated.xlsx`, `shkoporov_2019_absolute_data.mat`, and computes VMRs of the samples to assess bacterial contamination. 
 
 -`process_yachida_2019/analysis_yachida_VLP_stool.m`: analyzes the Phanta quantification of Yachida et al. 2019. Generates `virome_abundance_meta_analysis/final_aggregate_tables/yachida_2019_phanta_aggregated.xlsx`.
+
+-`process_garmaeva_2024/analysis_garmaeva_VLP_stool.m`: analyzes the Phanta quantification of Garmaeva et al. 2024. Generates `garmaeva_2024_*_absolute_data.mat`, and computes VMRs of the samples to assess bacterial contamination.
+
+-`process_shalon_culver_2024/analysis_shalon_culver_R.m`: analyzes phage induction in the Shalon and Culver et al. 2024 data. Generates Table 3. 
